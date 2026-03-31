@@ -1,0 +1,10 @@
+services:
+  sd-server:
+    image: ghcr.io/leejet/stable-diffusion.cpp:master-cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -1,0 +1,32 @@
+services:
+  sd-server:
+    image: ghcr.io/leejet/stable-diffusion.cpp:master
+    entrypoint: ["/sd-server"]
+    command:
+      - "--listen-ip"
+      - "0.0.0.0"
+      - "--listen-port"
+      - "1234"
+      - "-m"
+      - "/models/${SD_MODEL:-model.gguf}"
+    ports:
+      - "1234:1234"
+    volumes:
+      - ./models:/models
+      - ./outputs:/output
+    restart: unless-stopped
+
+  api:
+    build: .
+    ports:
+      - "${API_PORT:-8765}:8765"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - SD_SERVER_URL=http://sd-server:1234
+    depends_on:
+      - sd-server
+    volumes:
+      - ./outputs:/outputs
+    restart: unless-stopped
